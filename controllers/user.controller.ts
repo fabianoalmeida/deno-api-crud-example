@@ -42,16 +42,16 @@ class UserController implements Controller {
       }
     
       const {
-        value: { name, role, jiraAdmin }
+        value: { name, email }
       } = await request.body();
     
-      if (!name || !role) {
+      if (!name || !email) {
         response.status = 422;
-        response.body = { msg: "Incorrect user data. Name and role are required" };
+        response.body = { msg: "Incorrect user data. Name and email are required" };
         return;
       }
     
-      const userId = await this.userService.createUser({ name, role, jiraAdmin });
+      const userId = await this.userService.createUser({ name, email });
     
       response.body = { msg: "User created", userId };
   }
@@ -75,10 +75,10 @@ class UserController implements Controller {
       }
     
       const {
-        value: { name, role, jiraAdmin }
+        value: { name, email }
       } = await request.body();
     
-      await this.userService.updateUser(userId, { name, role, jiraAdmin });
+      await this.userService.updateUser(userId, { name, email });
     
       response.body = { msg: "User updated" };
   }

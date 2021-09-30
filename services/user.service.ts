@@ -1,35 +1,31 @@
-import { fetchData, persistData } from "./db.ts";
-import { User } from "../models/user.ts";
-import createId from "../services/createId.ts";
+import { User } from '../models/user.ts';
+import createId from '../services/createId.ts';
 
-type UserData = Pick<User, "name" | "role" | "jiraAdmin">;
+import UserRepository from '../repositories/user.repository.ts';
+
+type UserData = Pick<User, 'name' | 'email'>;
 
 class UserService {
 
+  public repository = new UserRepository();
+
   public getUsers = async (): Promise<User[]> => {
-    const users = await fetchData();
-    // sort by name
-    return users.sort((a, b) => a.name.localeCompare(b.name));
+    return await this.repository.getAll();
   }
 
   public getUser = async (userId: string): Promise<User | undefined> => {
-    const users = await fetchData();
-    return users.find(({ id }) => id === userId);
+    const user: User = await this.repository.getById(userId);
+    return user;
   }
 
   public createUser = async (userData: UserData): Promise<string> => {
-    const users = await fetchData();
-
-    const newUser: User = {
-      id: createId(),
+    const newUser = {
       name: String(userData.name),
-      role: String(userData.role),
-      jiraAdmin: "jiraAdmin" in userData ? Boolean(userData.jiraAdmin) : false,
-      added: new Date()
+      email: String(userData.email)
     };
 
-    await persistData([...users, newUser]);
-    return newUser.id;
+    const userId = await this.repository.create(newUser);
+    return userId;
   }
 
   public updateUser = async (
@@ -45,24 +41,14 @@ class UserService {
     const updatedUser = {
       ...user,
       name: userData.name !== undefined ? String(userData.name) : user.name,
-      role: userData.role !== undefined ? String(userData.role) : user.role,
-      jiraAdmin:
-        userData.jiraAdmin !== undefined
-          ? Boolean(userData.jiraAdmin)
-          : user.jiraAdmin
+      email: userData.email !== undefined ? String(userData.email) : user.email
     };
 
-    const users = await fetchData();
-    const filteredUsers = users.filter(user => user.id !== userId);
-
-    persistData([...filteredUsers, updatedUser]);
+    await this.repository.update(userId, newUser);
   }
 
   public deleteUser = async (userId: string): Promise<void> => {
-    const users = await this.getUsers();
-    const filteredUsers = users.filter(user => user.id !== userId);
-  
-    persistData(filteredUsers);
+    await this.repository.delete(userId);
   }
 }
 

@@ -1,7 +1,7 @@
 export interface User {
   id: string;
   name: string;
-  role: string;
-  jiraAdmin: boolean;
-  added: Date;
+  email: string;
+  create_at: Date;
+  update_at: Date;
 }
