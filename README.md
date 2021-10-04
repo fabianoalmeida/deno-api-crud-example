@@ -27,7 +27,7 @@ scoop install deno
 ### :rocket: Locally:
 #### Run:
 ```sh
-deno run --allow-net --allow-env --unstable index.ts
+deno run --allow-net --allow-env --unstable --allow-read index.ts
 ```
 ### :zap: [Docker](https://www.docker.com/products/docker-desktop):
 #### Mongo:

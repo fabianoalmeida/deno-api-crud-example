@@ -14,7 +14,7 @@ class UserService {
   }
 
   public getUser = async (userId: string): Promise<User | undefined> => {
-    const user: User = await this.repository.getById(userId);
+    const user = await this.repository.getById(userId);
     return user;
   }
 
@@ -25,7 +25,7 @@ class UserService {
     };
 
     const userId = await this.repository.create(newUser);
-    return userId;
+    return String(userId);
   }
 
   public updateUser = async (
@@ -44,7 +44,7 @@ class UserService {
       email: userData.email !== undefined ? String(userData.email) : user.email
     };
 
-    await this.repository.update(userId, newUser);
+    await this.repository.update(userId, updatedUser);
   }
 
   public deleteUser = async (userId: string): Promise<void> => {

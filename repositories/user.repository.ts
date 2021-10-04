@@ -1,31 +1,37 @@
-import db from '../db/mongodb.ts';
+import { db, Bson } from '../db/mongodb.ts';
 import { User } from '../models/user.ts';
 
+type UserData = Pick<User, 'name' | 'email'>;
+
 class UserRepository {
-    private usersCollection = db.collection("users");
+    private collection = db.collection<User>("users");
 
     async getAll() {
-        return await this.usersCollection.find();
+        return await this.collection.find({}).toArray();
     }
 
     async getById(id: string) {
-        const user: User | undefined = await this.usersCollection.findOne({ _id: { $oid: id } });
-
+        const user: User | undefined = await this.collection.findOne({ _id: new Bson.ObjectId(id) });
         return user;
     }
 
-    async create(user: User) {
-        user.create_at = new Date();
-        user.update_at = new Date();
-
-        const { $oid } = await this.usersCollection.insertOne(user);
-
-        return $oid;
+    async create(user: UserData) {
+        const insertedId = await this.collection.insertOne({
+            name: user.name,
+            email: user.email,
+            create_at: new Date(),
+            update_at: new Date(),
+        });
+        return insertedId;
     }
 
-    async update(id: string, user: { name?: string; email?: string }) {
-        const updateUser = await this.usersCollection.updateOne(
-            { _id: { $oid: id } },
+    async update(id: string,
+               user: {
+                    name?: string;
+                    email?: string
+               }) {
+        const updateUser = await this.collection.updateOne(
+            { _id: new Bson.ObjectId(id) },
             {
                 $set: user,
             },
@@ -35,9 +41,7 @@ class UserRepository {
     }
 
     async delete(id: string) {
-        const user = await this.usersCollection.deleteOne({ _id: { $oid: id } });
-
-        return user;
+        return await this.collection.deleteOne({ _id: new Bson.ObjectId(id) });
     }
 }
 

@@ -41,10 +41,9 @@ class UserController implements Controller {
         return;
       }
     
-      const {
-        value: { name, email }
-      } = await request.body();
-    
+      const result = await request.body();
+      const { name, email } = await result.value;
+
       if (!name || !email) {
         response.status = 422;
         response.body = { msg: "Incorrect user data. Name and email are required" };
@@ -74,9 +73,8 @@ class UserController implements Controller {
         return;
       }
     
-      const {
-        value: { name, email }
-      } = await request.body();
+      const result = await request.body();
+      const { name, email } = await result.value;
     
       await this.userService.updateUser(userId, { name, email });
     

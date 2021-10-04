@@ -6,7 +6,7 @@ import errorMiddleware from "./middlewares/error.ts";
 
 const app = new Application();
 
-app.use(errorMiddleware);
+// app.use(errorMiddleware);
 app.use(router.routes());
 app.use(router.allowedMethods());
 app.use(notFound);
