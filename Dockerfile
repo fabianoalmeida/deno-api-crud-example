@@ -1,7 +1,8 @@
-FROM hayd/alpine-deno:1.0.0
+# More info - https://github.com/denoland/deno_docker
+FROM denoland/deno:1.15.3
 
-# Port
-EXPOSE 4000
+# The port that your application listens to.
+EXPOSE 1993
 
 WORKDIR /app
 
@@ -9,7 +10,7 @@ WORKDIR /app
 USER deno
 
 # These steps will be re-run upon each file change in your working directory:
-ADD . /app
+ADD . .
 # Compile the main app so that it doesn't need to be compiled each startup/entry.
 RUN deno cache index.ts
 
